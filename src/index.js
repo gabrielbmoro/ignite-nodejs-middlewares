@@ -22,7 +22,9 @@ function checksExistsUserAccount(request, response, next) {
 function checksCreateTodosUserAvailability(request, response, next) {
   const { user } = request;
   if (!user.pro && user.todos.length >= 10) {
-    return response.status(403).json({ error: "User doesn't have limit to todo" });
+    return response
+      .status(403)
+      .json({ error: "User doesn't have limit to todo" });
   }
 
   next();
@@ -30,13 +32,16 @@ function checksCreateTodosUserAvailability(request, response, next) {
 
 function checksTodoExists(request, response, next) {
   const id = request.params.id;
-  const todo = users.todos.find((todo) => todo.id == id);
-  if (!todo) {
-    return response.status(404).json({ error: "Todo doesn't exist" });
-  }
 
-  request.todo = todo;
-  next();
+  users.forEach((user) => {
+    const todo = user.todos.find((todo) => todo.id == id);
+    if (todo) {
+      request.todo = todo;
+      return next();
+    }
+  });
+
+  return response.status(404).json({ error: "Todo doesn't exist" });
 }
 
 function findUserById(request, response, next) {
