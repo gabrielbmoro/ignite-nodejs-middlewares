@@ -44,6 +44,7 @@ function checksTodoExists(request, response, next) {
   if (user) {
     const todo = user.todos.find((todo) => todo.id == id);
     if (todo) {
+      request.user = user;
       request.todo = todo;
       return next();
     } else {
