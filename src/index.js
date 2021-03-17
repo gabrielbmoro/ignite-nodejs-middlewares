@@ -2,7 +2,7 @@ const express = require("express");
 const cors = require("cors");
 
 const { v4: uuidv4 } = require("uuid");
-const { UUIDv4 } = require("uuid-v4-validator");
+const ValidateUUIDv4 = require("./helper/ValidateUUIDv4");
 
 const app = express();
 app.use(express.json());
@@ -35,7 +35,7 @@ function checksTodoExists(request, response, next) {
   const id = request.params.id;
   const username = request.headers["username"];
 
-  const isIdValid = UUIDv4.validate(id);
+  const isIdValid = ValidateUUIDv4.isValid(id);
   if (!isIdValid) {
     return response.status(400).json({ error: "UUID is not valid" });
   }
