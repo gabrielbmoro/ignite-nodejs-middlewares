@@ -1,7 +1,8 @@
 const express = require("express");
 const cors = require("cors");
 
-const { v4: uuidv4, validate } = require("uuid");
+const { v4: uuidv4 } = require("uuid");
+const { UUIDv4 } = require("uuid-v4-validator");
 
 const app = express();
 app.use(express.json());
@@ -32,16 +33,25 @@ function checksCreateTodosUserAvailability(request, response, next) {
 
 function checksTodoExists(request, response, next) {
   const id = request.params.id;
+  const username = request.headers["username"];
 
-  users.forEach((user) => {
+  const isIdValid = UUIDv4.validate(id);
+  if (!isIdValid) {
+    return response.status(400).json({ error: "UUID is not valid" });
+  }
+
+  const user = users.find((user) => user.username == username);
+  if (user) {
     const todo = user.todos.find((todo) => todo.id == id);
     if (todo) {
       request.todo = todo;
       return next();
+    } else {
+      return response.status(404).json({ error: "Todo doesn't exist" });
     }
-  });
-
-  return response.status(404).json({ error: "Todo doesn't exist" });
+  } else {
+    return response.status(404).json({ error: "User doesn't exist" });
+  }
 }
 
 function findUserById(request, response, next) {
