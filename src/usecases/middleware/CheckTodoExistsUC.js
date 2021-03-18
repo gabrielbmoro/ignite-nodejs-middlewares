@@ -4,7 +4,7 @@ const UsersRepository = require("../../repository/UsersRepository");
 class CheckTodoExistsUC {
   execute(request, response, next) {
     const todoId = request.params.id;
-    const username = request.headers["username"];
+    const { username } = request.headers;
 
     const isIdValid = ValidateUUIDv4.isValid(todoId);
     if (!isIdValid) {
